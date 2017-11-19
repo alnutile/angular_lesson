@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
+import { error } from 'selenium-webdriver';
+import { MessageService } from '../message.service';
 
 @Component({
   selector: 'app-heroes',
@@ -17,7 +19,7 @@ export class HeroesComponent implements OnInit {
     name: "Windstorm"
   };
 
-  constructor(private heroService: HeroService) { }
+  constructor(private heroService: HeroService, private messageService: MessageService) { }
 
   ngOnInit() {
     this.getHeroes();
@@ -25,10 +27,15 @@ export class HeroesComponent implements OnInit {
   }
 
   onSelect(hero: Hero): void {
+    this.messageService.add("Hero chosen " + hero.name);
     this.selectedHero = hero;
   }
 
   getHeroes(): void {
-    this.heroes = this.heroService.getHeroes();
+    this.heroService.getHeroes()
+      .subscribe(
+        heroes => this.heroes = heroes,
+        error => console.log(error)
+      );
   }
 }
